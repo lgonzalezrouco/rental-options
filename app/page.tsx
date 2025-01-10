@@ -1,101 +1,235 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import PropertyCard from '@/components/PropertyCard';
+import AddPropertyModal from '@/components/AddPropertyModal';
+import EditPropertyModal from '@/components/EditPropertyModal';
+import { Property } from '@/types/property';
+import { PlusIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+
+// Dynamic import of map component to avoid SSR issues
+const MapWithNoSSR = dynamic(() => import('../components/Map'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-gray-100 flex items-center justify-center">Loading map...</div>
+});
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [propertiesList, setPropertiesList] = useState<Property[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hoveredPropertyId, setHoveredPropertyId] = useState<number | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Fetch properties on component mount
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      const response = await fetch('/api/properties');
+      if (!response.ok) throw new Error('Failed to fetch properties');
+      const data = await response.json();
+      setPropertiesList(data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (propertyId: number, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/properties/${propertyId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update status');
+      
+      const updatedProperty = await response.json();
+      setPropertiesList(currentProperties => 
+        currentProperties.map(property => 
+          property.id === propertyId ? updatedProperty : property
+        )
+      );
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
+
+  const handleEdit = (property: Property) => {
+    setSelectedProperty(property);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (propertyId: number, data: { service_charge: number; cleaning_fee: number; commission_charge: number }) => {
+    try {
+      const response = await fetch(`/api/properties/${propertyId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Failed to update property');
+      
+      const updatedProperty = await response.json();
+      setPropertiesList(currentProperties =>
+        currentProperties.map(property =>
+          property.id === propertyId ? updatedProperty : property
+        )
+      );
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error('Error updating property:', error);
+    }
+  };
+
+  const handleExport = () => {
+    // Define CSV headers
+    const headers = [
+      'ID',
+      'Name',
+      'Price per Month',
+      'Location',
+      'Rooms',
+      'Bathrooms',
+      'Square Meters',
+      'Status',
+      'Service Charge',
+      'Cleaning Fee',
+      'Commission Charge',
+      'Is Approximated',
+      'URL'
+    ].join(',');
+
+    // Convert properties to CSV rows
+    const csvRows = propertiesList.map(property => {
+      const values = [
+        property.id,
+        `"${property.name}"`,
+        property.price_per_month,
+        `"${property.location}"`,
+        property.rooms,
+        property.bathrooms,
+        property.square_meters,
+        `"${property.status}"`,
+        property.service_charge,
+        property.cleaning_fee,
+        property.commission_charge,
+        property.is_approximated,
+        `"${property.url}"`
+      ];
+      return values.join(',');
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers, ...csvRows].join('\n');
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'properties.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleAddProperty = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddPropertySubmit = async (data: Omit<Property, 'id' | 'status' | 'service_charge' | 'cleaning_fee' | 'commission_charge' | 'latitude' | 'longitude'>) => {
+    try {
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Failed to add property');
+      
+      const addedProperty = await response.json();
+      setPropertiesList(current => [...current, addedProperty]);
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error('Error adding property:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-xl text-gray-600">Loading properties...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col lg:flex-row h-screen bg-gray-100">
+      <div className="w-full lg:w-2/5 h-1/2 lg:h-screen overflow-y-auto p-4 bg-white">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-gray-800">Available Properties</h1>
+          <div className="flex gap-3">
+            <button
+              onClick={handleAddProperty}
+              className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <PlusIcon className="h-5 w-5" />
+              <span>Add Property</span>
+            </button>
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              title="Export properties"
+            >
+              <ArrowDownTrayIcon className="h-5 w-5" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="space-y-4">
+          {propertiesList.map((property) => (
+            <PropertyCard
+              key={property.id}
+              property={property}
+              onStatusChange={handleStatusChange}
+              onEdit={handleEdit}
+              onMouseEnter={() => setHoveredPropertyId(property.id)}
+              onMouseLeave={() => setHoveredPropertyId(null)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Map section */}
+      <div className="w-full lg:w-3/5 h-1/2 lg:h-screen">
+        <MapWithNoSSR 
+          properties={propertiesList} 
+          hoveredPropertyId={hoveredPropertyId}
+        />
+      </div>
+
+      {/* Add Property Modal */}
+      <AddPropertyModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddPropertySubmit}
+      />
+
+      {/* Edit Property Modal */}
+      <EditPropertyModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleEditSubmit}
+        property={selectedProperty}
+      />
     </div>
   );
 }
