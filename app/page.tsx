@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import PropertyCard from '@/components/PropertyCard';
 import AddPropertyModal from '@/components/AddPropertyModal';
@@ -21,6 +21,7 @@ export default function Home() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hoveredPropertyId, setHoveredPropertyId] = useState<number | null>(null);
+  const propertyRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   // Fetch properties on component mount
   useEffect(() => {
@@ -163,6 +164,16 @@ export default function Home() {
     }
   };
 
+  const handleMapMarkerHover = (propertyId: number | null) => {
+    setHoveredPropertyId(propertyId);
+    if (propertyId && propertyRefs.current[propertyId]) {
+      propertyRefs.current[propertyId]?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -199,14 +210,23 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-4 p-4">
             {propertiesList.map((property) => (
-              <PropertyCard
+              <div
                 key={property.id}
-                property={property}
-                onStatusChange={handleStatusChange}
-                onEdit={handleEdit}
-                onMouseEnter={() => setHoveredPropertyId(property.id)}
-                onMouseLeave={() => setHoveredPropertyId(null)}
-              />
+                ref={(el) => {
+                  if (el) {
+                    propertyRefs.current[property.id] = el;
+                  }
+                }}
+              >
+                <PropertyCard
+                  property={property}
+                  onStatusChange={handleStatusChange}
+                  onEdit={handleEdit}
+                  onMouseEnter={() => setHoveredPropertyId(property.id)}
+                  onMouseLeave={() => setHoveredPropertyId(null)}
+                  isHovered={hoveredPropertyId === property.id}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -217,6 +237,7 @@ export default function Home() {
         <MapWithNoSSR 
           properties={propertiesList} 
           hoveredPropertyId={hoveredPropertyId}
+          onMarkerHover={handleMapMarkerHover}
         />
       </div>
 

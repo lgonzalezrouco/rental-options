@@ -33,9 +33,10 @@ const BARCELONA_CENTER = {
 type MapProps = {
   properties: Property[];
   hoveredPropertyId?: number | null;
+  onMarkerHover?: (propertyId: number | null) => void;
 }
 
-export default function Map({ properties, hoveredPropertyId }: MapProps) {
+export default function Map({ properties, hoveredPropertyId, onMarkerHover }: MapProps) {
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const [showDistricts, setShowDistricts] = useState(true);
 
@@ -120,8 +121,8 @@ export default function Map({ properties, hoveredPropertyId }: MapProps) {
 
       <MapContainer
         center={[BARCELONA_CENTER.lat, BARCELONA_CENTER.lng]}
-        zoom={12}
-        className="w-full h-full"
+        zoom={13}
+        style={{ height: '100%', width: '100%' }}
       >
         <Pane name="districtsPane" style={{ zIndex: 200 }} />
         <Pane name="markersPane" style={{ zIndex: 400 }} />
@@ -153,9 +154,8 @@ export default function Map({ properties, hoveredPropertyId }: MapProps) {
                   position={[property.latitude, property.longitude]}
                   icon={createIcon(isHovered)}
                   eventHandlers={{
-                    mouseover: (e) => {
-                      e.target.openPopup();
-                    }
+                    mouseover: () => onMarkerHover?.(property.id),
+                    mouseout: () => onMarkerHover?.(null),
                   }}
                   pane="markersPane"
                 >
@@ -182,17 +182,8 @@ export default function Map({ properties, hoveredPropertyId }: MapProps) {
                     weight: isHovered ? 2 : 1
                   }}
                   eventHandlers={{
-                    mouseover: (e) => {
-                      const layer = e.target;
-                      layer.openPopup();
-                    },
-                    mouseout: (e) => {
-                      e.target.closePopup();
-                    },
-                    click: (e) => {
-                      const layer = e.target;
-                      layer.openPopup();
-                    }
+                    mouseover: () => onMarkerHover?.(property.id),
+                    mouseout: () => onMarkerHover?.(null),
                   }}
                   pane="approximatedPane"
                 >

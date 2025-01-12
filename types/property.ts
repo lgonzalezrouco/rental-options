@@ -25,8 +25,9 @@ export type StatusOption = {
 
 export type PropertyCardProps = {
   property: Property;
-  onStatusChange: (id: number, status: string) => void;
+  onStatusChange: (propertyId: number, newStatus: string) => void;
   onEdit: (property: Property) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  isHovered?: boolean;
 } 
