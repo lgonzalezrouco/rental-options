@@ -73,9 +73,9 @@ export default function PropertyCard({
       <div className="p-4">
         {/* Header - Name, Status, and Edit */}
         <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-0 sm:justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
-            <h2 className="text-base sm:text-lg font-semibold text-gray-800 truncate">{property.name}</h2>
+          <div className="flex items-center gap-2 min-w-0 flex-1 sm:max-w-[60%]">
+            <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
+            <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 truncate leading-tight">{property.name}</h2>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <select 
