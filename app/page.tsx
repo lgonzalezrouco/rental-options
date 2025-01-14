@@ -114,7 +114,7 @@ export default function Home() {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSubmit = async (propertyId: number, data: { service_charge: number; cleaning_fee: number; commission_charge: number }) => {
+  const handleEditSubmit = async (propertyId: number, data: { service_charge?: number | null; cleaning_fee?: number | null; commission_charge?: number | null }) => {
     try {
       const response = await fetch(`/api/properties/${propertyId}`, {
         method: 'PATCH',

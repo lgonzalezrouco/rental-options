@@ -5,11 +5,11 @@ export type Property = {
   location: string;
   rooms: number;
   bathrooms: number;
-  square_meters: number | null;
+  square_meters?: number | null;
   status: string;
-  service_charge: number | null;
-  cleaning_fee: number | null;
-  commission_charge: number | null;
+  service_charge?: number | null;
+  cleaning_fee?: number | null;
+  commission_charge?: number | null;
   latitude: number;
   longitude: number;
   is_approximated: boolean;

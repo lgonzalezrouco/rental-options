@@ -8,18 +8,39 @@ import { useEffect } from 'react';
 import { Property } from '@/types/property';
 
 const editPropertySchema = z.object({
-  service_charge: z.number()
-    .min(0, 'Service charge must be 0 or greater')
-    .max(1000, 'Service charge must be less than 1,000')
-    .nullable(),
-  cleaning_fee: z.number()
-    .min(0, 'Cleaning fee must be 0 or greater')
-    .max(1000, 'Cleaning fee must be less than 1,000')
-    .nullable(),
-  commission_charge: z.number()
-    .min(0, 'Commission must be 0 or greater')
-    .max(1000, 'Commission must be less than 1,000')
-    .nullable(),
+  service_charge: z.preprocess(
+    (val) => {
+      if (val === '' || val === null || val === undefined) return null;
+      const num = Number(val);
+      return isNaN(num) ? null : num;
+    },
+    z.number()
+      .min(0, 'Service charge must be 0 or greater')
+      .max(1000, 'Service charge must be less than 1,000')
+      .nullable()
+  ),
+  cleaning_fee: z.preprocess(
+    (val) => {
+      if (val === '' || val === null || val === undefined) return null;
+      const num = Number(val);
+      return isNaN(num) ? null : num;
+    },
+    z.number()
+      .min(0, 'Cleaning fee must be 0 or greater')
+      .max(1000, 'Cleaning fee must be less than 1,000')
+      .nullable()
+  ),
+  commission_charge: z.preprocess(
+    (val) => {
+      if (val === '' || val === null || val === undefined) return null;
+      const num = Number(val);
+      return isNaN(num) ? null : num;
+    },
+    z.number()
+      .min(0, 'Commission must be 0 or greater')
+      .max(1000, 'Commission must be less than 1,000')
+      .nullable()
+  ),
 });
 
 type EditPropertyFormData = z.infer<typeof editPropertySchema>;

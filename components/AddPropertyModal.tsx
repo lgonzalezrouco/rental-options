@@ -23,7 +23,9 @@ const propertySchema = z.object({
     .max(10, 'Must have less than 10 bathrooms'),
   square_meters: z.number()
     .min(1, 'Must be at least 1 square meter')
-    .max(1000, 'Must be less than 1000 square meters'),
+    .max(1000, 'Must be less than 1000 square meters')
+    .nullable()
+    .optional(),
   url: z.string()
     .url('Must be a valid URL'),
   is_approximated: z.boolean()
@@ -179,7 +181,13 @@ export default function AddPropertyModal({ isOpen, onClose, onSubmit }: AddPrope
             <label className="block text-sm font-medium text-gray-700">Square meters</label>
             <input
               type="number"
-              {...register('square_meters', { valueAsNumber: true })}
+              {...register('square_meters', { 
+                setValueAs: (value) => {
+                  if (value === '') return null;
+                  const num = Number(value);
+                  return isNaN(num) ? null : num;
+                }
+              })}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
             />
             {errors.square_meters && (
