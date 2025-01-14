@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/utils/supabase';
 
 export async function PATCH(
-  req: NextRequest,
+  request: NextRequest,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any
 ) {
@@ -10,11 +10,20 @@ export async function PATCH(
   const id = params.id;
 
   try {
-    const updates = await req.json();
+    const data = await request.json();
+    const { status, service_charge, cleaning_fee, commission_charge, is_favorite } = data;
 
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: any = {};
+    if (status !== undefined) updateData.status = status;
+    if (service_charge !== undefined) updateData.service_charge = service_charge;
+    if (cleaning_fee !== undefined) updateData.cleaning_fee = cleaning_fee;
+    if (commission_charge !== undefined) updateData.commission_charge = commission_charge;
+    if (is_favorite !== undefined) updateData.is_favorite = is_favorite;
+
+    const { data: property, error } = await supabase
       .from('properties')
-      .update(updates)
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
@@ -30,11 +39,11 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(property);
   } catch (error) {
     console.error('Error updating property:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Error updating property' },
       { status: 500 }
     );
   }

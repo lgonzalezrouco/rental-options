@@ -11,8 +11,10 @@ import {
   PencilSquareIcon,
   MapPinIcon,
   LinkIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  StarIcon as StarIconOutline
 } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import { PropertyCardProps, StatusOption } from '@/types/property';
 
@@ -55,7 +57,8 @@ export default function PropertyCard({
   onEdit,
   onMouseEnter,
   onMouseLeave,
-  isHovered 
+  isHovered,
+  onFavoriteToggle
 }: PropertyCardProps) {
   const [isFeesOpen, setIsFeesOpen] = useState(false);
 
@@ -95,6 +98,17 @@ export default function PropertyCard({
                 </option>
               ))}
             </select>
+            <button
+              onClick={() => onFavoriteToggle(!property.is_favorite)}
+              className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+              title={property.is_favorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              {property.is_favorite ? (
+                <StarIconSolid className="h-5 w-5 text-yellow-400" />
+              ) : (
+                <StarIconOutline className="h-5 w-5 text-gray-600" />
+              )}
+            </button>
             <button 
               onClick={() => onEdit(property)}
               className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
@@ -184,7 +198,9 @@ export default function PropertyCard({
                 <WrenchScrewdriverIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex justify-between w-full">
                   <span className="text-gray-600">Service Charge</span>
-                  <span className="font-medium text-gray-700">${property.service_charge}</span>
+                  <span className="font-medium text-gray-700">
+                    {property.service_charge !== null ? `$${property.service_charge}` : 'Not set'}
+                  </span>
                 </div>
               </div>
 
@@ -193,7 +209,9 @@ export default function PropertyCard({
                 <SparklesIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex justify-between w-full">
                   <span className="text-gray-600">Cleaning Fee</span>
-                  <span className="font-medium text-gray-700">${property.cleaning_fee}</span>
+                  <span className="font-medium text-gray-700">
+                    {property.cleaning_fee !== null ? `$${property.cleaning_fee}` : 'Not set'}
+                  </span>
                 </div>
               </div>
 
@@ -202,7 +220,9 @@ export default function PropertyCard({
                 <CalculatorIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex justify-between w-full">
                   <span className="text-gray-600">Commission</span>
-                  <span className="font-medium text-gray-700">${property.commission_charge}</span>
+                  <span className="font-medium text-gray-700">
+                    {property.commission_charge !== null ? `$${property.commission_charge}` : 'Not set'}
+                  </span>
                 </div>
               </div>
             </div>
