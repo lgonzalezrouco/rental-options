@@ -5,8 +5,9 @@ import dynamic from 'next/dynamic';
 import PropertyCard from '@/components/PropertyCard';
 import AddPropertyModal from '@/components/AddPropertyModal';
 import EditPropertyModal from '@/components/EditPropertyModal';
+import BatchUploadModal from '@/components/BatchUploadModal';
 import { Property } from '@/types/property';
-import { PlusIcon, ArrowDownTrayIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, ArrowDownTrayIcon, FunnelIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import FilterPanel from '@/components/FilterPanel';
 import FilterChips from '@/components/FilterChips';
 import { ActiveFilters } from '@/types/property';
@@ -56,6 +57,7 @@ export default function Home() {
   const [propertiesList, setPropertiesList] = useState<Property[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isBatchUploadModalOpen, setIsBatchUploadModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hoveredPropertyId, setHoveredPropertyId] = useState<number | null>(null);
@@ -349,6 +351,14 @@ export default function Home() {
                   <span className="text-sm sm:text-base">Add Property</span>
                 </button>
                 <button
+                  onClick={() => setIsBatchUploadModalOpen(true)}
+                  className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  title="Batch upload properties"
+                >
+                  <ArrowUpTrayIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline text-sm sm:text-base">Batch Upload</span>
+                </button>
+                <button
                   onClick={handleExport}
                   className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                   title="Export properties"
@@ -430,6 +440,12 @@ export default function Home() {
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleEditSubmit}
         property={selectedProperty}
+      />
+
+      <BatchUploadModal
+        isOpen={isBatchUploadModalOpen}
+        onClose={() => setIsBatchUploadModalOpen(false)}
+        onSuccess={fetchProperties}
       />
     </div>
   );
