@@ -327,34 +327,34 @@ export default function Home() {
       <div className="w-full lg:w-2/5 h-1/2 lg:h-screen flex flex-col bg-white">
         <div className="sticky top-0 z-10 bg-white shadow-sm flex-shrink-0">
           <div className="p-4">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-gray-800">Available Properties</h1>
-              <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Available Properties</h1>
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <button
                   onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors ${
                     isFilterPanelOpen || hasActiveFilters
                       ? 'bg-blue-100 text-blue-700'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  <FunnelIcon className="h-5 w-5" />
-                  <span>Filters</span>
+                  <FunnelIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">Filters</span>
                 </button>
                 <button
                   onClick={handleAddProperty}
-                  className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  <PlusIcon className="h-5 w-5" />
-                  <span>Add Property</span>
+                  <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">Add Property</span>
                 </button>
                 <button
                   onClick={handleExport}
-                  className="flex items-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                   title="Export properties"
                 >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Export</span>
+                  <ArrowDownTrayIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline text-sm sm:text-base">Export</span>
                 </button>
               </div>
             </div>
@@ -378,32 +378,39 @@ export default function Home() {
 
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-4 p-4">
-            {filteredAndSortedProperties.map((property) => (
-              <div
-                key={property.id}
-                ref={(el) => {
-                  if (el) {
-                    propertyRefs.current[property.id] = el;
-                  }
-                }}
-              >
-                <PropertyCard
-                  property={property}
-                  onStatusChange={handleStatusChange}
-                  onEdit={handleEdit}
-                  onMouseEnter={() => setHoveredPropertyId(property.id)}
-                  onMouseLeave={() => setHoveredPropertyId(null)}
-                  isHovered={hoveredPropertyId === property.id}
-                  onFavoriteToggle={(isFavorite) => handleFavoriteToggle(property.id, isFavorite)}
-                />
+            {filteredAndSortedProperties.length > 0 ? (
+              filteredAndSortedProperties.map((property) => (
+                <div
+                  key={property.id}
+                  ref={(el) => {
+                    if (el) {
+                      propertyRefs.current[property.id] = el;
+                    }
+                  }}
+                >
+                  <PropertyCard
+                    property={property}
+                    onStatusChange={handleStatusChange}
+                    onEdit={handleEdit}
+                    onMouseEnter={() => setHoveredPropertyId(property.id)}
+                    onMouseLeave={() => setHoveredPropertyId(null)}
+                    isHovered={hoveredPropertyId === property.id}
+                    onFavoriteToggle={(isFavorite) => handleFavoriteToggle(property.id, isFavorite)}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-500 text-lg mb-2">No properties found</div>
+                <div className="text-gray-400 text-sm">Try adjusting your filters to see more results</div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
 
       {/* Map section */}
-      <div className="w-full lg:w-3/5 h-1/2 lg:h-screen">
+      <div className="w-full lg:w-3/5 h-1/2 lg:h-screen relative z-0">
         <MapWithNoSSR 
           properties={filteredAndSortedProperties}
           hoveredPropertyId={hoveredPropertyId}

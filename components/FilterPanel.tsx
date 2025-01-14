@@ -76,108 +76,131 @@ export default function FilterPanel({
   };
 
   return (
-    <div className={`
-      overflow-hidden transition-all duration-300
-      ${isOpen ? 'max-h-[500px] border-b' : 'max-h-0'}
-    `}>
-      <div className="bg-white p-4 space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <FunnelIcon className="h-5 w-5" />
-            Sort & Filter
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-            title="Close filters panel"
-          >
-            <XMarkIcon className="h-5 w-5 text-gray-500" />
-          </button>
-        </div>
+    <>
+      {/* Backdrop for small screens */}
+      <div 
+        className={`fixed inset-0 bg-black/50 transition-opacity lg:hidden ${
+          isOpen ? 'opacity-100 z-[1001]' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
 
-        {/* Sort Section */}
-        <div>
-          <h4 className="font-medium text-gray-700 mb-2">Sort by</h4>
-          <div className="flex flex-wrap gap-2">
-            {sortOptions.map((option) => (
+      {/* Panel */}
+      <div className={`
+        fixed inset-x-0 bottom-0 z-[1002] lg:static lg:z-auto
+        transition-all duration-300 overflow-hidden
+        ${isOpen 
+          ? 'translate-y-0 border-b lg:max-h-[1000px]' 
+          : 'translate-y-full lg:translate-y-0 lg:max-h-0'
+        }
+      `}>
+        <div className="bg-white rounded-t-xl lg:rounded-none shadow-lg lg:shadow-none max-h-[85vh] lg:max-h-none flex flex-col">
+          {/* Header */}
+          <div className="flex-shrink-0 p-4 border-b">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <FunnelIcon className="h-5 w-5" />
+                Sort & Filter
+              </h3>
               <button
-                key={`${option.field}-${option.direction}`}
-                onClick={() => handleSortChange(option)}
-                className={`px-3 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors ${
-                  activeFilters.sort?.field === option.field && activeFilters.sort?.direction === option.direction
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                onClick={onClose}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                title="Close filters panel"
               >
-                {option.label}
-                {option.direction === 'asc' ? (
-                  <ArrowUpIcon className="h-4 w-4" />
-                ) : (
-                  <ArrowDownIcon className="h-4 w-4" />
-                )}
+                <XMarkIcon className="h-5 w-5 text-gray-500" />
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Filter Section */}
-        <div>
-          <h4 className="font-medium text-gray-700 mb-2">Filter by</h4>
-          
-          {/* Status Filter */}
-          <div className="mb-4">
-            <label className="text-sm text-gray-600 mb-1 block">Status</label>
-            <div className="flex flex-wrap gap-2">
-              {statusOptions.map((status) => (
-                <button
-                  key={status.value}
-                  onClick={() => handleStatusToggle(status.value)}
-                  className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                    activeFilters.filters.status.includes(status.value)
-                      ? status.bgColor + ' ' + status.color
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
             </div>
           </div>
 
-          {/* Favorites Filter */}
-          <div className="mb-4">
-            <label className="text-sm text-gray-600 mb-1 block">Show only</label>
-            <button
-              onClick={handleFavoritesToggle}
-              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                activeFilters.filters.showFavorites
-                  ? 'bg-yellow-100 text-yellow-700'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Favorites
-            </button>
-          </div>
+          {/* Content */}
+          <div className="overflow-y-auto">
+            <div className="p-4 space-y-4">
+              {/* Sort Section */}
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Sort by</h4>
+                <div className="flex flex-wrap gap-2">
+                  {sortOptions.map((option) => (
+                    <button
+                      key={`${option.field}-${option.direction}`}
+                      onClick={() => handleSortChange(option)}
+                      className={`px-3 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors ${
+                        activeFilters.sort?.field === option.field && activeFilters.sort?.direction === option.direction
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {option.label}
+                      {option.direction === 'asc' ? (
+                        <ArrowUpIcon className="h-4 w-4" />
+                      ) : (
+                        <ArrowDownIcon className="h-4 w-4" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* Rooms Filter */}
-          <div className="mb-4">
-            <label className="text-sm text-gray-600 mb-1 block">Number of rooms</label>
-            <select
-              title="Select number of rooms"
-              value={activeFilters.filters.rooms || ''}
-              onChange={(e) => handleRoomsChange(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 
-                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 
-                transition-colors appearance-none"
-            >
-              <option value="">Any number of rooms</option>
-              {[1, 2, 3, 4, 5].map((num) => (
-                <option key={num} value={num}>{num} {num === 1 ? 'room' : 'rooms'}</option>
-              ))}
-            </select>
+              {/* Filter Section */}
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Filter by</h4>
+                
+                {/* Status Filter */}
+                <div className="mb-4">
+                  <label className="text-sm text-gray-600 mb-1 block">Status</label>
+                  <div className="flex flex-wrap gap-2">
+                    {statusOptions.map((status) => (
+                      <button
+                        key={status.value}
+                        onClick={() => handleStatusToggle(status.value)}
+                        className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+                          activeFilters.filters.status.includes(status.value)
+                            ? status.bgColor + ' ' + status.color
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {status.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Favorites Filter */}
+                <div className="mb-4">
+                  <label className="text-sm text-gray-600 mb-1 block">Show only</label>
+                  <button
+                    onClick={handleFavoritesToggle}
+                    className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+                      activeFilters.filters.showFavorites
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Favorites
+                  </button>
+                </div>
+
+                {/* Rooms Filter */}
+                <div className="mb-4">
+                  <label className="text-sm text-gray-600 mb-1 block">Number of rooms</label>
+                  <select
+                    title="Select number of rooms"
+                    value={activeFilters.filters.rooms || ''}
+                    onChange={(e) => handleRoomsChange(e.target.value)}
+                    className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg text-base text-gray-700 
+                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 
+                      transition-colors appearance-none"
+                  >
+                    <option value="">Any number of rooms</option>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <option key={num} value={num}>{num} {num === 1 ? 'room' : 'rooms'}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 } 

@@ -72,15 +72,15 @@ export default function PropertyCard({
     >
       <div className="p-4">
         {/* Header - Name, Status, and Edit */}
-        <div className="flex justify-between items-start mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-0 sm:justify-between mb-3">
           <div className="flex items-center gap-2">
-            <HomeIcon className="h-5 w-5 text-gray-600" />
-            <h2 className="text-lg font-semibold text-gray-800">{property.name}</h2>
+            <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
+            <h2 className="text-base sm:text-lg font-semibold text-gray-800 truncate">{property.name}</h2>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select 
               title="Status"
-              className={`px-3 py-1 rounded-full text-sm border-0 cursor-pointer focus:ring-2 focus:ring-offset-2 transition-colors ${
+              className={`px-2 sm:px-3 py-1 rounded-full text-sm border-0 cursor-pointer focus:ring-2 focus:ring-offset-2 transition-colors ${
                 statusOptions.find(opt => opt.value === property.status)?.bgColor || 'bg-gray-100'
               } ${
                 statusOptions.find(opt => opt.value === property.status)?.color || 'text-gray-700'
@@ -100,21 +100,21 @@ export default function PropertyCard({
             </select>
             <button
               onClick={() => onFavoriteToggle(!property.is_favorite)}
-              className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+              className="p-1 sm:p-1.5 rounded-full hover:bg-gray-200 transition-colors"
               title={property.is_favorite ? "Remove from favorites" : "Add to favorites"}
             >
               {property.is_favorite ? (
-                <StarIconSolid className="h-5 w-5 text-yellow-400" />
+                <StarIconSolid className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
               ) : (
-                <StarIconOutline className="h-5 w-5 text-gray-600" />
+                <StarIconOutline className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
               )}
             </button>
             <button 
               onClick={() => onEdit(property)}
-              className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+              className="p-1 sm:p-1.5 rounded-full hover:bg-gray-200 transition-colors"
               title="Edit property"
             >
-              <PencilSquareIcon className="h-5 w-5 text-gray-600" />
+              <PencilSquareIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
             </button>
           </div>
         </div>
@@ -123,23 +123,23 @@ export default function PropertyCard({
         <div className="space-y-2">
           {/* Price */}
           <div className="flex items-center gap-2 mb-3">
-            <CurrencyDollarIcon className="h-5 w-5 text-blue-600" />
+            <CurrencyDollarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             <div>
-              <span className="text-2xl font-bold text-blue-600">${property.price_per_month}</span>
-              <span className="text-sm font-normal text-gray-600 ml-1">/month</span>
+              <span className="text-xl sm:text-2xl font-bold text-blue-600">${property.price_per_month}</span>
+              <span className="text-xs sm:text-sm font-normal text-gray-600 ml-1">/month</span>
             </div>
           </div>
 
           {/* Location */}
           <div className="flex items-center gap-2">
             <MapPinIcon className="h-4 w-4 text-gray-500" />
-            <span className="text-gray-600">{property.location}</span>
+            <span className="text-sm sm:text-base text-gray-600 truncate">{property.location}</span>
           </div>
 
           {/* Rooms */}
           <div className="flex items-center gap-2">
             <BuildingOfficeIcon className="h-4 w-4 text-gray-500" />
-            <span className="text-gray-600">{property.rooms} rooms</span>
+            <span className="text-sm sm:text-base text-gray-600">{property.rooms} rooms</span>
           </div>
 
           {/* Bathrooms */}
@@ -154,13 +154,13 @@ export default function PropertyCard({
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
             </svg>
-            <span className="text-gray-600">{property.bathrooms} bathrooms</span>
+            <span className="text-sm sm:text-base text-gray-600">{property.bathrooms} bathrooms</span>
           </div>
 
           {/* Square Meters */}
           <div className="flex items-center gap-2">
             <ChartBarIcon className="h-4 w-4 text-gray-500" />
-            <span className="text-gray-600">{property.square_meters}m²</span>
+            <span className="text-sm sm:text-base text-gray-600">{property.square_meters}m²</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -169,7 +169,7 @@ export default function PropertyCard({
                 href={property.url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 hover:underline truncate"
+                className="text-sm sm:text-base text-blue-600 hover:text-blue-800 hover:underline truncate"
               >
                 View listing
               </a>
@@ -181,7 +181,7 @@ export default function PropertyCard({
               onClick={() => setIsFeesOpen(!isFeesOpen)}
               className="w-full flex items-center justify-between text-gray-600 hover:text-gray-800 transition-colors"
             >
-              <span className="text-sm font-medium">Additional Fees</span>
+              <span className="text-sm sm:text-base font-medium">Additional Fees</span>
               <ChevronDownIcon 
                 className={`h-4 w-4 transition-transform duration-200 ${
                   isFeesOpen ? 'transform rotate-180' : ''
@@ -197,8 +197,8 @@ export default function PropertyCard({
               <div className="flex items-center gap-2">
                 <WrenchScrewdriverIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex justify-between w-full">
-                  <span className="text-gray-600">Service Charge</span>
-                  <span className="font-medium text-gray-700">
+                  <span className="text-sm sm:text-base text-gray-600">Service Charge</span>
+                  <span className="text-sm sm:text-base font-medium text-gray-700">
                     {property.service_charge !== null ? `$${property.service_charge}` : 'Not set'}
                   </span>
                 </div>
@@ -208,8 +208,8 @@ export default function PropertyCard({
               <div className="flex items-center gap-2">
                 <SparklesIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex justify-between w-full">
-                  <span className="text-gray-600">Cleaning Fee</span>
-                  <span className="font-medium text-gray-700">
+                  <span className="text-sm sm:text-base text-gray-600">Cleaning Fee</span>
+                  <span className="text-sm sm:text-base font-medium text-gray-700">
                     {property.cleaning_fee !== null ? `$${property.cleaning_fee}` : 'Not set'}
                   </span>
                 </div>
@@ -219,8 +219,8 @@ export default function PropertyCard({
               <div className="flex items-center gap-2">
                 <CalculatorIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex justify-between w-full">
-                  <span className="text-gray-600">Commission</span>
-                  <span className="font-medium text-gray-700">
+                  <span className="text-sm sm:text-base text-gray-600">Commission</span>
+                  <span className="text-sm sm:text-base font-medium text-gray-700">
                     {property.commission_charge !== null ? `$${property.commission_charge}` : 'Not set'}
                   </span>
                 </div>

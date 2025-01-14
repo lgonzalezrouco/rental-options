@@ -102,15 +102,15 @@ export default function Map({ properties, hoveredPropertyId, onMarkerHover }: Ma
   };
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full z-0">
       {/* Single Toggle Button for Districts */}
-      <div className="absolute top-4 right-4 z-[1000]">
+      <div className="absolute top-4 right-4 z-[100]">
         <button
           onClick={() => setShowDistricts(!showDistricts)}
           className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
             showDistricts 
               ? 'bg-blue-600 text-white' 
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-200'
           }`}
           title="Toggle districts"
         >
@@ -123,10 +123,11 @@ export default function Map({ properties, hoveredPropertyId, onMarkerHover }: Ma
         center={[BARCELONA_CENTER.lat, BARCELONA_CENTER.lng]}
         zoom={13}
         style={{ height: '100%', width: '100%' }}
+        className="z-0"
       >
-        <Pane name="districtsPane" style={{ zIndex: 200 }} />
-        <Pane name="markersPane" style={{ zIndex: 400 }} />
-        <Pane name="approximatedPane" style={{ zIndex: 300 }} />
+        <Pane name="districtsPane" style={{ zIndex: 200 }} className="z-0" />
+        <Pane name="markersPane" style={{ zIndex: 400 }} className="z-0" />
+        <Pane name="approximatedPane" style={{ zIndex: 300 }} className="z-0" />
 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
