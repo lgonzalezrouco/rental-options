@@ -10,13 +10,16 @@ import { Property } from '@/types/property';
 const editPropertySchema = z.object({
   service_charge: z.number()
     .min(0, 'Service charge must be 0 or greater')
-    .max(1000, 'Service charge must be less than 1,000'),
+    .max(1000, 'Service charge must be less than 1,000')
+    .nullable(),
   cleaning_fee: z.number()
     .min(0, 'Cleaning fee must be 0 or greater')
-    .max(1000, 'Cleaning fee must be less than 1,000'),
+    .max(1000, 'Cleaning fee must be less than 1,000')
+    .nullable(),
   commission_charge: z.number()
     .min(0, 'Commission must be 0 or greater')
-    .max(1000, 'Commission must be less than 1,000'),
+    .max(1000, 'Commission must be less than 1,000')
+    .nullable(),
 });
 
 type EditPropertyFormData = z.infer<typeof editPropertySchema>;
@@ -42,9 +45,9 @@ export default function EditPropertyModal({ isOpen, onClose, onSubmit, property 
   // Set initial values when property changes
   useEffect(() => {
     if (property) {
-      setValue('service_charge', property.service_charge);
-      setValue('cleaning_fee', property.cleaning_fee);
-      setValue('commission_charge', property.commission_charge);
+      setValue('service_charge', property.service_charge ?? null);
+      setValue('cleaning_fee', property.cleaning_fee ?? null);
+      setValue('commission_charge', property.commission_charge ?? null);
     }
   }, [property, setValue]);
 
